@@ -6,6 +6,7 @@ export default Ember.Component.extend({
   classNameBindings: 'expanding',
   manage: function() {
     if (this.get('isLoading')) {
+      this.set('isLoaded', false);
       if (this.get('expanding')) {
         this.expandingAnimate.call(this);
       } else {
@@ -16,7 +17,6 @@ export default Ember.Component.extend({
     }
   }.observes('isLoading'),
   animate: function() {
-    this.set('isLoaded', false);
     var self = this,
         elapsedTime = 0,
         inner = $('<span>'),
@@ -97,6 +97,15 @@ export default Ember.Component.extend({
     outer.append(inner);
 
     var interval = window.setInterval(function() {
+      // the activity has finished
+      if (self.get('isLoaded')) {
+        // start with a sizable pixel step
+        if (stepWidth < 10) {
+          stepWidth = 10;
+        }
+        // accelerate to completion
+        stepWidth = stepWidth + stepWidth;
+      }
       var step = (innerWidth = innerWidth + stepWidth);
       if (innerWidth > outerWidth) {
         window.clearInterval(interval);
